@@ -1,0 +1,28 @@
+<ion-view view-title="Login" name="login-view" hide-nav-bar="true" class="login">
+  <ion-content overflow-scroll=true  scroll-sista="tabs"class="padding" style="overflow:hidden; background: url(img/screen_bg.png) center; background-size: cover;">
+    <img src="img\logo-ruangtemu.png" style="width:100%; height:auto; margin-top:10px;">
+    <form method="post" enctype="text/plain">
+      <div class="list padding card" style="margin-top:-10px">
+        <label class="item item-input item-floating-label">
+          <input type="text" placeholder="Username" ng-model="data.username" class="input-login">
+        </label>
+        <label class="item item-input item-floating-label">
+          <input type="password" placeholder="Password" ng-model="data.password" class="input-login">
+        </label><br/>
+        <input type="submit" value="Login" class="button button-block button-calm text-center" ng-click="login()" style="background-color:#24afe5;"></input>
+      </div>       
+    </form>
+
+    <div class="row">
+      <div class="col">
+        <p style="text-align:center;"><a style="color:white;text-decoration:none" href="#/app/forgot_password">I forgot my password</a></p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <p style="text-align:center; color:white;">No account yet? Register <a style="color:white; font-weight:bold; text-decoration:none" href="#/register">here</a></p>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

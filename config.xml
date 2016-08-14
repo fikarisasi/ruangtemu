@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<widget id="com.ibm.ibmemployeeapps" version="0.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Ruang Temu</name>
+  <description>
+    Application for Ruang Temu
+  </description>
+  <author email="8iibrahi@id.ibm.com" href="http://ionicframework.com/">
+    Intern IBM ID 2016
+  </author>
+  <content src="index.html"/>
+  <access origin="*"/>
+  <access launch-external="yes" origin="tel:*"/>
+  <access launch-external="yes" origin="mailto:*"/>
+  <access launch-external="yes" origin="file:*"/>
+  <access launch-external="yes" origin="ftp:*"/>
+  <allow-intent href="tel:*"/>
+  <allow-intent href="sms:*"/>
+  <allow-intent href="mailto:*"/>
+  <allow-intent href="ftp:*"/>
+  <preference name="webviewbounce" value="false"/>
+  <preference name="UIWebViewBounce" value="false"/>
+  <preference name="DisallowOverscroll" value="true"/>
+  <preference name="android-minSdkVersion" value="16"/>
+  <preference name="BackupWebStorage" value="none"/>
+  <preference name="SplashScreen" value="screen"/>
+  <preference name="orientation" value="portrait"/>
+  <preference name="SplashScreenDelay" value="3000"/>
+  <preference name="xwalkVersion" value="17+"/>
+  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect"/>
+  <preference name="xwalkMode" value="embedded"/>
+  <preference name="xwalkMultipleApk" value="true"/>
+  <feature name="StatusBar">
+    <param name="ios-package" onload="true" value="CDVStatusBar"/>
+  </feature>
+  <platform name="android">
+    <icon src="resources\android\icon\drawable-ldpi-icon.png" density="ldpi"/>
+    <icon src="resources\android\icon\drawable-mdpi-icon.png" density="mdpi"/>
+    <icon src="resources\android\icon\drawable-hdpi-icon.png" density="hdpi"/>
+    <icon src="resources\android\icon\drawable-xhdpi-icon.png" density="xhdpi"/>
+    <icon src="resources\android\icon\drawable-xxhdpi-icon.png" density="xxhdpi"/>
+    <icon src="resources\android\icon\drawable-xxxhdpi-icon.png" density="xxxhdpi"/>
+    <splash src="resources\android\splash\drawable-port-ldpi-screen.png" density="port-ldpi"/>
+    <splash src="resources\android\splash\drawable-port-mdpi-screen.png" density="port-mdpi"/>
+  </platform>
+  <platform name="ios">
+    <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
+  </platform>
+  <icon src="resources\android\icon\drawable-xhdpi-icon.png"/>
+</widget>

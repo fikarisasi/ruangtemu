@@ -1,0 +1,364 @@
+<ion-view cache-view="true" view-title="{{labels.pageTitle}}" hide-back-button="true" show-nav-button="true">
+    <ion-nav-buttons side="right">
+         <button class="button button-icon button-clear mdi mdi-refresh" ng-click="refresh()">
+         </button>
+    </ion-nav-buttons>
+	<ion-content scroll="false">
+		<div id="maps" class="maps">
+			<div id="map" data-tap-disabled="false" style="background: rgba(0, 0, 0, 0);position: absolute;z-index:0;">
+			</div>
+			<a ng-show="screenState=='onTrip'" class="button button-fab button-assertive" ng-click="mapPanicButtonClick()" style="float:right;border-radius:50%;top:10px;right:10px;padding:5px;font-size:14px;">SOS</a>
+			<div style="position:absolute;z-index:3	;width:90%;">
+				<input ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="pac-input" class="controls" placeholder="Cari lokasi" ng-focus="showPlaces()" ng-blur="hidePlaces()" ng-model="searchPOI.keyword" ng-change="searchGooglePlace()" type="search">
+				<div ng-show="isShowPlaces" class="list card" style="background-color:white">
+				  <a ng-repeat="fav in favPOI" style="padding-top:5px;padding-bottom:5px" ng-click="goToFpoi({{fav}})" class="item">
+					<i class="icon ion-heart" style="font-size:small"></i>
+					<span style="font-size:small">{{fav.location_name}}</span>,
+					<span style="font-size:small;color:#989898">{{fav.location_description}}</span>
+				  </a>
+				  <a ng-repeat="gpoi in googlePOIs" style="padding-top:5px;padding-bottom:5px" ng-click="goToGpoi({{gpoi}})" class="item">
+					<i class="icon ion-social-google" style="font-size:small"></i>
+					<span style="font-size:small">{{gpoi.location_name}}</span>,
+					<span style="font-size:small;color:#989898">{{gpoi.location_description}}</span>
+				  </a>
+				</div>
+			</div>
+			<div id="zoomcontainer" class="show">
+				<div>
+					<!-- <i ng-show="showPointer" id="zoom" class="location-selector mdi mdi-map-marker" alt="Enlarged Image"></i> -->
+					<img ng-show="showPointer" src="img/loc_start.png" id="zoom" class="location-selector" alt="Enlarged Image"></img>
+				</div>
+				<span class="helper"></span>
+			</div>
+			<button class="button button-icon button-flat mdi mdi-crosshairs-gps" ng-click="goToCurrentLocation();" style="color:#666;font-size:30px;right:10px;bottom:55px;position:relative;float:right;border-radius:4px;padding:0px 5px;background-color:#fff;"></button>
+			<!--<div class="row">
+				<input ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="pac-input" class="controls" placeholder="Pilih lokasi penjemputan" onFocus="value=''">
+			</div>-->
+		</div>
+		<div id="reserve-command-bar" ng-show="(screenState=='selectPickupPoint')||(screenState=='selectDestination')">
+			<div class="row" style="padding-bottom:0px;">
+				<div class="col">
+					<i class="location-icon mdi mdi-map-marker" style="padding:1px;font-size:20px"></i>
+					<p id="labelJemputTujuan" style="font-size:16px;color:#fff;margin-top:0px;">{{labels.selectPointType}}</p>
+				</div>
+			</div>
+			<div class="row">
+				<p type="item-text-wrap" id="resv_from" style="font-size:small;color:#fff;padding-left:10px;margin-top:0px;padding-top:0px;"></p>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="mapLeftButton" class="button button-bar button-flat button-assertive" ng-click="mapLeftButtonClick()">
+						{{labels.mapLeftButton}}
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="mapRightButton" class="button button-bar button-flat button-calm login-loginbutton" ng-click="mapRightButtonClick()">
+						{{labels.mapRightButton}}
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-show="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')"
+					id="bigFootButton" class='button button-flat button-bar button-{{bigButtonColor}}' ng-click="mapBigButtonClick()">
+					{{labels.bigButton}}
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="search-command-bar" ng-show="screenState == 'searchTaxi'" ng-click="checkAndUpdateTrip()">
+			<div class="row center">
+				<img ng-src="img/loading.gif" width="20%" height="20%">
+			</div>
+			<div class="row center">
+				<p style="color:#fff;font-size:18px;">Mencari Taksi Terdekat...</p>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-show="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')"
+					id="bigFootButton" class='button button-flat button-bar button-{{bigButtonColor}}' ng-click="mapBigButtonClick()">
+					{{labels.bigButton}}</button>
+				</div>
+			</div>
+		</div>
+		<div id="enroute-command-bar" ng-show="(screenState == 'driverEnroute')">
+			<div class="row center">
+				<p class="enroute-status">{{driverArrivalStatus}} {{ETA}}</p>
+			</div>
+			<div class="row center">
+				<p class="enroute-desc">Silahkan hubungi jika pengemudi kami tidak sampai di tempat anda</p>
+			</div>
+			<div class="row">
+				<div class="col col-20">
+					<img class="enroute-avatar" ng-src="img/driver_1.jpg" ng-click="checkAndUpdateTrip()">
+				</div>
+				<div class="col col-60">
+					<p class="enroute-driver">{{driver.name}}</p>
+					<p class="enroute-hulls">Nomor Taksi: {{hullNumber}}</p>
+					<rating class="enroute-rating small" readonly="true" ng-model="driver.rating" max="driverRating.max" ></rating> <p style="color:#fff;display:inline;font-size:13px;">({{driverRating.rating}})</p>
+				</div>
+				<div class="col-20">
+					<a class="button button-call-driver button-fab ion-ios-telephone button-balanced" href="tel:085761357333" ng-click="checkAndUpdateTrip()"></a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-show="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')"
+					id="bigFootButton" class='button button-flat button-bar button-{{bigButtonColor}}' ng-click="mapBigButtonClick()">
+					{{labels.bigButton}}</button>
+				</div>
+			</div>
+		</div>
+		<div id="enroute-command-bar" ng-show="(screenState == 'onTrip')">
+			<div class="row center">
+				<p class="enroute-status" ng-show"locDest.name != 'n/a'">Estimasi Sampai di Tujuan Dalam {{ETA}}</p>
+			</div>
+			<div class="row center">
+				<p class="enroute-desc">Nikmati perjalanan anda dengan login ke in taxi entertainment kami</p>
+			</div>
+			<div class="row">
+				<div class="col col-20">
+					<img class="enroute-avatar" ng-src="img/driver_1.jpg" ng-click="checkAndUpdateTrip()">
+				</div>
+				<div class="col col-60">
+					<p class="enroute-driver">{{driver.name}}</p>
+					<p class="enroute-hulls">Nomor Taksi: {{hullNumber}}</p>
+					<rating class="enroute-rating small" readonly="true" ng-model="driver.rating" max="driverRating.max" ></rating> <p style="color:#fff;display:inline;font-size:13px;">({{driverRating.rating}})</p>
+				</div>
+				<div class="col-20">
+					<a class="button button-call-driver button-fab ion-ios-telephone button-balanced" href="tel:085761357333" ng-click="checkAndUpdateTrip()"></a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-show="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')"
+					id="bigFootButton" class='button button-flat button-bar button-{{bigButtonColor}} login-loginbutton' ng-click="mapBigButtonClick()">
+					{{labels.bigButton}}</button>
+				</div>
+			</div>
+		</div>
+		<!-- <div id="command-bar" class="command-bar">
+			<div class="row" ng-show="(screenState=='selectPickupPoint')||(screenState=='selectDestination')" style="padding-bottom:0px;">
+				<div class="col">
+					<i class="location-icon ion-location" style="padding-left:10px;"></i>
+					<p id="labelJemputTujuan" style="font-size:16px;color:#fff;margin-top:0px;">{{labels.selectPointType}}</p>
+				</div>
+			</div>
+			<div class="row" ng-show="(screenState=='selectPickupPoint')||(screenState=='selectDestination')">
+				<p type="item-text-wrap" id="resv_from" style="font-size:small;color:#fff;padding-left:10px;margin-top:0px;padding-top:0px;"></p>
+			</div>
+			<div ng-show="screenState == 'searchTaxi'" ng-click="checkAndUpdateTrip()">
+				<div class="row center">
+					<img ng-src="img/loading.gif" width="20%" height="20%">
+				</div>
+				<div class="row center">
+					<p style="color:#fff;font-size:18px;">Mencari Taksi Terdekat...</p>
+				</div>
+			</div>
+			<div class="row" ng-show="(screenState == 'driverEnroute')||(screenState == 'onTrip')">
+				<h3 style="color:#fff;" ng-show="screenState=='driverEnroute'">{{driverArrivalStatus}} {{ETA}}</h3>
+				<h3 style="color:#fff;" ng-show="(screenState=='onTrip') && (trip.destination_name!='n/a')">Estimasi tiba di tujuan dalam {{ETA}}</h3>
+				<p ng-show="screenState=='onTrip'" style="color:#FFF;font-size:16px;">Nikmati perjalanan anda dengan in taxi entertainment kami</p>
+				<p ng-show="screenState=='driverEnroute'" style="color:#CCC;">Silahkan hubungi jika pengemudi kami tidak sampai di tempat anda</p>
+			</div>
+			<div class="row" ng-show="(screenState == 'driverEnroute')||(screenState == 'onTrip')">
+				<img ng-src="img/driver_1.jpg" ng-click="checkAndUpdateTrip()">
+				<h3 style="color:#fff;">{{driver.name}}</h3>
+				<rating style="color:gold;" class="small" readonly="true" ng-model="driver.rating" max="driverRating.max" ></rating>
+				<p style="color:#fff;">Nomor Taksi: {{hullNumber}}</p>
+				<a ng-hide="screenState=='onTrip'" class="button icon-right ion-ios-telephone button-balanced" href="tel:085761357333" ng-click="checkAndUpdateTrip()"></a>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="mapLeftButton" class="button button-bar button-assertive" ng-click="mapLeftButtonClick()">
+						{{labels.mapLeftButton}}
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-hide="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')" id="mapRightButton" class="button button-bar button-calm login-loginbutton" ng-click="mapRightButtonClick()">
+						{{labels.mapRightButton}}
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<button ng-show="(screenState == 'searchTaxi')||(screenState == 'driverEnroute')||(screenState=='onTrip')"
+					id="bigFootButton" class='button button-bar button-{{bigButtonColor}}' ng-click="mapBigButtonClick()">
+					{{labels.bigButton}}
+					</button>
+				</div>
+			</div>
+		</div> -->
+	</ion-content>
+
+	<!-- Modal screen for reservation additional info and confirmation -->
+	<script id="templates/modal.html" type="text/ng-template">
+		<ion-modal-view>
+			<ion-header-bar class="bar bar-header bar-calm">
+				<h2 class="title">Pesan Taksi</h1>
+				<button class="button button-clear icon-button ion-close-round" ng-click="cancelConfirm()"></button>
+			</ion-header-bar>
+			<ion-content class="padding">
+				<div class="row">
+					<p style="font-size:16px;">Lokasi Penjemputan</p>
+				</div>
+				<div class="row">
+					<p style="font-size:14px;">{{locPickup.name}}</p>
+				</div>
+				<div class="row">
+					<p style="font-size:16px;">Lokasi Tujuan (Opsional)</p>
+				</div>
+				<div class="row" ng-click="selectDest()">
+					<p style="font-size:14px;">{{locDest.name}}</p>
+				</div>
+				<div class="row">
+					<label class="item item-input item-select" style="padding:0px;border:none;">
+						<div class="input-label" style="padding:10px 0px">
+							Tipe taksi
+						</div>
+						<select ng-model="taxiTypeData.index" ng-options="taxiTypeItems.indexOf(item) as item for item in taxiTypeItems"></select>
+					</label>
+				</div>
+				<div class="row">
+					<div class="col">
+						<p style="font-size:16px;">Waktu Jemput</p>
+					</div>
+					<div class="col">
+						<p style="font-size:14px;">
+							<ionic-timepicker input-obj="timePickerObject">
+								 	{{time}}
+							</ionic-timepicker>
+						</p>
+					</div>
+				</div>
+				<!--<div class="row">
+					<label class="checkbox">
+						<input type="checkbox" ng-model="isToAirport.checked" ng-checked="isToAirport.checked">
+					</label>
+					<p>Centang untuk pergi ke Soekarno Hatta International Airport</p>
+				</div>-->
+				<div class="row" ng-show="destinationSelected">
+					<div class="col col-70">
+						<p>Perkiraan biaya</p>
+					</div>
+					<div class="col col-30">
+						<p>{{estimatedFare}} ({{distance}})</p>
+					</div>
+				</div>
+				/*
+				<div class="row">
+					<div class="col">
+						<p>Gunakan Poin</p>
+					</div>
+					<div class="col">
+						<input placeholder="0" type="text" ng-model="data.usedPoint" value="{{data.usedPoint}}">
+					</div>
+				</div>
+				*/
+				<div class="bar-footer">
+					<button class="button button-bar button-calm login-loginbutton" ng-click="searchTaxi('NO')">Pesan Taksi</button>
+				</div>
+			</ion-content>
+		</ion-modal-view>
+	</script>
+
+	<!-- Modal screen for reservation additional info and confirmation -->
+	<script id="templates/biasa.html" type="text/ng-template">
+		<div class="row">
+			<div class="col">
+				<p style="font-size:16px;margin:0px;">Lokasi Penjemputan</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<p style="font-size:14px;">{{locPickup.name}}</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<p style="font-size:16px;margin:0px;">Keterangan Tempat Penjemputan</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<textarea id="email-textarea" ng-model="data.reservation_note_pickup" value="{{data.reservation_note_pickup}}" placeholder="Tuliskan informasi detil lokasi anda" rows="5" cols="30"></textarea>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<p style="font-size:16px;margin:0px;">Lokasi Tujuan (Opsional)</p>
+			</div>
+		</div>
+		<div class="row" >
+			<div class="col">
+				<button class="button button-small button-calm" ng-show="locDest.name=='n/a'" ng-click="selectDest()">Tambah Tujuan</button>
+				<p style="font-size:14px;" ng-show="locDest.name!='n/a'">{{locDest.name}}</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<label class="item item-input item-select" style="padding:0px;border:none;">
+					<div class="input-label" style="padding:10px 0px;">
+						Tipe taksi
+					</div>
+					<select ng-model="taxiTypeData.index" style="background-color:transparent;" ng-options="taxiTypeItems.indexOf(item) as item for item in taxiTypeItems"></select>
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<p style="font-size:16px;">Waktu Jemput</p>
+			</div>
+			<div class="col">
+				<p style="font-size:14px;">
+					<ionic-timepicker input-obj="timePickerObject">
+						 	{{time}}
+					</ionic-timepicker>
+				</p>
+			</div>
+		</div>
+		<div class="row" ng-show="destinationSelected">
+			<div class="col col-70">
+				<p>Perkiraan biaya</p>
+			</div>
+			<div class="col col-30">
+				<p>{{estimatedFare}} ({{distance}})</p>
+			</div>
+		</div>
+		<!--
+		// <div class="row">
+		// 	<div class="col">
+		// 		<p>Gunakan Poin</p>
+		// 	</div>
+		// 	<div class="col">
+		// 		<input placeholder="0" type="text" style="background-color:#fff;padding-left:10px;" ng-model="data.usedPoint" value="{{data.usedPoint}}">
+		// 	</div>
+		// </div>
+		-->
+	</script>
+
+	<script id="templates/onTripMenu.html" type="text/ng-template">
+		<ion-list>
+			<ion-item style="padding:2px;background:none;border:none" class="item-text-wrap">
+				<h3 style="font-size:small">Tujuan perjalanan</h3>
+			</ion-item>
+			<ion-item style="padding:2px" class="item item-icon-right item-text-wrap" ng-click="selectDestOnTrip()">
+				<p style="font-size:small">{{trip.destination_name}}</p>
+				<i class="icon ion-edit icon-accessory"></i>
+			</ion-item>
+			<!--<ion-item style="padding:2px;background:none;border:none" class="item-text-wrap">
+				<h3 style="font-size:small">
+					Metode pembayaran
+				</h3>
+			</ion-item>
+			<ion-item style="font-size:small;height:30px" class="item-select">
+				<select style="width:100%;height:100%" ng-model="walletData.index" ng-options="item.card_number as item.payment_type for item in wallets"></select>
+			</ion-item>-->
+		</ion-list>          
+	</script>
+	
+</ion-view>

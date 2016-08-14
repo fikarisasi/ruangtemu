@@ -1,0 +1,45 @@
+<ion-view view-title="Timeline" cache-view="false">
+<ion-nav-buttons side="right">
+  <button class="button button-clear icon-button ion-ios-search"></button>
+</ion-nav-buttons>
+
+<ion-content overflow-scroll=true scroll-sista="tabs" style="background-color: #ececec;">
+<ion-refresher pulling-text="Pull to refresh..." on-refresh="doRefresh()" refreshing-text="Fetching ..." refreshing-icon="ion-loading-b"></ion-refresher>
+<!--List Posting-->
+<div class="list card" ng-repeat="data in dataPost" >
+
+  <div class="item item-avatar" style="min-height: 60px;">
+    <img ng-src="https://upload.wikimedia.org/wikipedia/commons/6/6f/David_Guetta_at_2011_MMVA.jpg">
+    <h2>Jimmy{{data.employee}}</h2>
+    <p>2016-08-14{{data.date | date:'yyyy-MM-dd'}}</p>
+  </div>
+
+  <div class="item item-body" style="padding-top:0px; padding-left:0px; padding-right:0px; padding-bottom:10px; border-bottom: 1px solid; border-color: #ececec;">
+    <img class="full-image" ng-src="http://www.elcivics.com/lifeskills/images/healthy-foods.jpg">
+    <h1 style="padding-left:16px; padding-right:16px; margin-top:8px; margin-bottom: 8px; font-size:24px">
+      {{data.title}}
+    </h1>
+    <p style="padding-left:16px; padding-right:16px; color:black; margin-top:0px; text-align:justify">
+      {{data.content}}
+      <a ng-href="#/app/home/idrandom">read more</a>
+    </p>
+    <p style="padding-left:16px; padding-right:16px; color:black;">
+      <a href="#" class="subdued">{{data.like}} Like</a>
+      <a href="#" class="subdued">{{data.comment}} Comments</a>
+      <a href="#" class="subdued">Share</a>
+      <i class="icon ion-heart" style="padding-top:1px; padding-left: 4px; float:right; color:gray"></i>
+      <a href="#" class="subdued" style="float:right;">10k</a>
+    </p>
+  </div>
+</div>
+<!--End List Posting-->
+
+
+
+</ion-content>
+<!--Create Post Button-->
+<ion-buttons start id="floating-button" style="margin-right:10px; background-color:#24afe5;" onclick="location.href='#/app/create_post'">
+  <i class="icon ion-plus" style="font-size:30px"></i>
+</ion-buttons>
+<!--End Create Post Button-->
+</ion-view>

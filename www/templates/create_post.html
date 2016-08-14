@@ -1,0 +1,71 @@
+<ion-view view-title="Create Post" hide-back-button="true" text-center cache-view="false">
+  <ion-nav-buttons side="left">
+    <button class="button button-clear icon-button mdi mdi-arrow-left" ng-click="back()"></button>
+  </ion-nav-buttons>
+  <!--<ion-nav-buttons side="right">
+    <button class="button button-clear icon-button ion-android-attach"></button>
+    <button class="button button-clear icon-button ion-android-send"></button>
+  </ion-nav-buttons>-->
+  
+  <ion-content overflow-scroll=true scroll-sista="tabs" style="background-color:#ececec;">
+    <!-- list post -->
+    <form method="post" enctype="text/plain">    
+
+      <!-- button -->
+      <div class="button-bar">
+        <button ng-click="Share = !Share; Privacy = false; Tag = false;" class="button icon ion-android-people" style="padding-top:10px">
+        </button>
+
+        <button ng-click="Privacy = !Privacy; Share = false; Tag = false;" class="button icon ion-android-lock" style="padding-top:10px">
+        </button>
+
+        <button ng-click="Tag = !Tag; Privacy = false; Share = false;" class="button icon ion-pricetag" style="padding-top:10px">
+        </button>
+      </div>
+
+      <ul ng-show="Share" class="list" style="background:#fafafa;">
+        <ion-list>
+          <ion-checkbox ng-model="filter.all" ng-model="isChecked">All</ion-checkbox>
+          <ion-checkbox ng-model="filter.gbs" ng-model="isChecked">General Business Solution</ion-checkbox>
+          <ion-checkbox ng-model="filter.jti" ng-model="isChecked">Jasa Teknologi Informasi</ion-checkbox>
+          <ion-checkbox ng-model="filter.name3" ng-model="isChecked">Division Name 3</ion-checkbox>
+          <ion-checkbox ng-model="filter.name4" ng-model="isChecked">Division Name 4</ion-checkbox>
+        </ion-list>
+      </ul>
+
+      <ul ng-show="Privacy" class="list" style="background:#fafafa;">
+        <ion-list>
+          <ion-radio ng-model="filter.public">Public</ion-radio>
+          <ion-radio ng-model="filter.internal">Internal Only</ion-radio>
+        </ion-list>
+      </ul>
+
+      <ul ng-show="Tag" class="list" style="background:#fafafa;">
+        <ion-list>
+          <ion-checkbox ng-model="filter.important">Important</ion-checkbox>
+          <ion-checkbox ng-model="filter.technology">Technology</ion-checkbox>
+          <ion-checkbox ng-model="filter.business">Business</ion-checkbox>
+          <ion-checkbox ng-model="filter.healthy">Healthy</ion-checkbox>
+          <ion-checkbox ng-model="filter.category">Category Name 4</ion-checkbox>
+        </ion-list>
+      </ul>
+
+      <div class="list padding">
+        <input type="hidden" ng-model="data.employee" value="{{profile.username}}">
+        <label class="item item-input item-floating-label" style="padding:0">
+          <input type="text" placeholder="Title" ng-model="data.title">
+        </label><br/>
+        <label class="item item-input item-floating-label" style="padding:0">
+          <textarea style="height:200px;background:transparent" placeholder="Content Information" ng-model="data.content"></textarea>
+        </label>
+      </div>  
+
+      <div class="row">
+        <div class="col">
+          <input type="submit" value="Create" class="button button-block button-calm text-center" ng-click="tambahPost()" style="background-color:#24afe5;"></input>
+        </div>
+      </div>
+
+    </form>
+  </ion-content>
+</ion-view
